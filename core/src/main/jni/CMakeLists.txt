@@ -9,6 +9,13 @@ aux_source_directory(src/jni SRC_LIST)
 add_library(${PROJECT_NAME} STATIC ${SRC_LIST})
 add_library(liblzma STATIC IMPORTED)
 
+execute_process(
+    COMMAND find /home/runner/work/LSPosed_mod/LSPosed_mod/ -name liblzma.a
+    RESULT_VARIABLE result
+    OUTPUT_VARIABLE output
+    ERROR_VARIABLE error_output
+)
+message(WARNING ${result})
 # Search for liblzma.a
 set(LIBLZMA_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../.cxx/${CMAKE_BUILD_TYPE}/)
 file(GLOB_RECURSE LZMA_FILES "${LIBLZMA_DIR}/liblzma.a")
