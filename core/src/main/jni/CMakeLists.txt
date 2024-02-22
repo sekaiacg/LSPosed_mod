@@ -16,6 +16,7 @@ execute_process(
     ERROR_VARIABLE error_output
 )
 message(WARNING ${result})
+message(WARNING ${output})
 # Search for liblzma.a
 set(LIBLZMA_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../.cxx/${CMAKE_BUILD_TYPE}/)
 file(GLOB_RECURSE LZMA_FILES "${LIBLZMA_DIR}/liblzma.a")
