@@ -48,12 +48,6 @@ android {
             proguardFiles("proguard-rules.pro")
         }
     }
-
-    externalNativeBuild {
-        cmake {
-            path("src/main/jni/xz/CMakeLists.txt")
-        }
-    }
 }
 
 copy {

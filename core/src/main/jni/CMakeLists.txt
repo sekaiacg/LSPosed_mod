@@ -2,12 +2,13 @@ project(core)
 cmake_minimum_required(VERSION 3.4.1)
 
 add_subdirectory(${EXTERNAL_ROOT} external)
+add_subdirectory(${XZ_ROOT} xz)
 
 aux_source_directory(src SRC_LIST)
 aux_source_directory(src/jni SRC_LIST)
 
 add_library(${PROJECT_NAME} STATIC ${SRC_LIST})
-add_library(liblzma STATIC IMPORTED)
+#add_library(liblzma STATIC IMPORTED)
 
 # Search for liblzma.a
 set(LIBLZMA_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../.cxx/${CMAKE_BUILD_TYPE}/)
