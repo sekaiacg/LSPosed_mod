@@ -90,7 +90,7 @@ bool xz::init_decoder( lzma_stream* strm ) {
             break;
     }
 
-    LOGE("Error initializing the decoder: {} (error code {} )", msg, ret);
+    LOGE("Error initializing the decoder: {} (error code {} )", msg, (uint8_t)ret);
 
     //LOG_ERROR( "Error initializing the decoder: " << msg << " (error code " << ret << " )" );
     return false;
@@ -234,7 +234,7 @@ bool xz::decompress( std::istream& istream, std::ostream& ostream ) {
                     msg = "Unknown error, possibly a bug";
                     break;
             }
-            LOGE("Error decoder: {} (error code {} )", msg, ret);
+            LOGE("Error decoder: {} (error code {} )", msg, (uint8_t)ret);
 
             //LOG_ERROR( "Error decoder: " << msg << " (error code " << ret << " )" );
             return false;
