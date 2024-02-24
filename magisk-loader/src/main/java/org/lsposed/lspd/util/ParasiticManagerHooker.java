@@ -91,6 +91,7 @@ public class ParasiticManagerHooker {
 
     private static void sendBinderToManager(final ClassLoader classLoader, IBinder binder) {
         try {
+            Hookers.logD("sendBinderToManager " + classLoader + " " + ActivityThread.class.getClassLoader());
             var clazz = XposedHelpers.findClass("org.lsposed.manager.Constants", classLoader);
             var ok = (boolean) XposedHelpers.callStaticMethod(clazz, "setBinder",
                     new Class[]{IBinder.class}, binder);
@@ -123,6 +124,7 @@ public class ParasiticManagerHooker {
                     protected void afterHookedMethod(MethodHookParam param) {
                         var pkgInfo = getManagerPkgInfo(null);
                         if (pkgInfo != null && XposedHelpers.getObjectField(param.thisObject, "mApplicationInfo") == pkgInfo.applicationInfo) {
+                            Hookers.logD("LoadedApk getClassLoader " + param.getResult());
                             sendBinderToManager((ClassLoader) param.getResult(), managerService.asBinder());
                             unhooks[0].unhook();
                         }
@@ -133,6 +135,7 @@ public class ParasiticManagerHooker {
         var activityHooker = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) {
+                Hookers.logD("beforeHookedMethod constructor ActivityThread$ActivityClientRecord");
                 for (var i = 0; i < param.args.length; ++i) {
                     if (param.args[i] instanceof ActivityInfo) {
                         var aInfo = (ActivityInfo) param.args[i];
@@ -140,6 +143,7 @@ public class ParasiticManagerHooker {
                         if (pkgInfo == null) return;
                         for (var activity : pkgInfo.activities) {
                             if ("org.lsposed.manager.ui.activity.MainActivity".equals(activity.name)) {
+                                Hookers.logD("beforeHookedMethod constructor ActivityThread$ActivityClientRecord MainActivity");
                                 activity.applicationInfo = pkgInfo.applicationInfo;
                                 param.args[i] = activity;
                             }
@@ -157,7 +161,7 @@ public class ParasiticManagerHooker {
                     for (var i = 0; i < parameters.length; ++i) {
                         if (parameters[i] == ActivityInfo.class) {
                             aInfo = (ActivityInfo) param.args[i];
-                            Hookers.logD("loading state of " + aInfo.name);
+                            Hookers.logD("beforeHookedMethod loading state of " + aInfo.name);
                         } else if (parameters[i] == Bundle.class && aInfo != null) {
                             final int idx = i;
                             states.computeIfPresent(aInfo.name, (k, v) -> {
@@ -178,10 +182,11 @@ public class ParasiticManagerHooker {
 
             @Override
             protected void afterHookedMethod(MethodHookParam param) {
+                Hookers.logD("afterHookedMethod constructor ActivityThread$ActivityClientRecord");
                 for (var i = 0; i < param.args.length && activityClientRecordClass.isInstance(param.thisObject); ++i) {
                     if (param.args[i] instanceof ActivityInfo) {
                         var aInfo = (ActivityInfo) param.args[i];
-                        Hookers.logD("loading state of " + aInfo.name);
+                        Hookers.logD("afterHookedMethod loading state of " + aInfo.name);
                         states.computeIfPresent(aInfo.name, (k, v) -> {
                             XposedHelpers.setObjectField(param.thisObject, "state", v);
                             return v;
@@ -335,6 +340,7 @@ public class ParasiticManagerHooker {
             if (binder.size() > 0 && binder.get(0) != null && managerParcelFd != null) {
                 managerFd = managerParcelFd.detachFd();
                 var managerService = ILSPManagerService.Stub.asInterface(binder.get(0));
+                Utils.logD("injecting manager " + managerService);
                 hookForManager(managerService);
                 Utils.logD("injected manager");
                 return true;
