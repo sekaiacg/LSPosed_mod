@@ -1,3 +1,5 @@
+/* Credits to https://github.com/elsamuko/xz_test/
+ */
 #include "xz_decompress.hpp"
 
 #include <cerrno>
