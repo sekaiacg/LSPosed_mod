@@ -292,9 +292,10 @@ ElfW(Addr) ElfImg::GnuLookup(std::string_view name, uint32_t hash) const {
 void ElfImg::MayInitLinearMap() const {
     if (symtabs_.empty()) {
         if (symtab_start != nullptr && symstr_offset_for_symtab != 0) {
+            auto hdr = header_debugdata != nullptr ? header_debugdata : header;
             for (ElfW(Off) i = 0; i < symtab_count; i++) {
                 unsigned int st_type = ELF_ST_TYPE(symtab_start[i].st_info);
-                const char *st_name = offsetOf<const char *>(header, symstr_offset_for_symtab +
+                const char *st_name = offsetOf<const char *>(hdr, symstr_offset_for_symtab +
                                                                      symtab_start[i].st_name);
                 if ((st_type == STT_FUNC || st_type == STT_OBJECT) && symtab_start[i].st_size) {
                     symtabs_.emplace(st_name, &symtab_start[i]);
